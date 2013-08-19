@@ -47,6 +47,16 @@ file { '/vagrant/APP_ROOT/library/Zend':
   require => Exec['zf create project'],
 }  
 
+file {'/vagrant/APP_ROOT/system':
+  ensure  => 'directory',
+  require => Exec['zf create project'],
+}
+
+file { '/vagrant/APP_ROOT/system/phpinfo.php':
+  ensure  => present,
+  content => '<?php phpinfo();',
+  require => File['/vagrant/APP_ROOT/system'],
+}
 
 file { '/vagrant/logs':
   ensure => 'directory',
@@ -71,7 +81,7 @@ apache::vhost { 'default':
   priority      => '',
   template      => 'apache/virtualhost/vhost.conf.erb',
   env_variables => [
-    'APP_ENVIRONMENT development'
+    'APP_ENVIRONMENT development',
   ],
 }
 
@@ -85,6 +95,7 @@ php::module { 'php5-cli': }
 php::module { 'php5-curl': }
 php::module { 'php5-intl': }
 php::module { 'php5-mcrypt': }
+php::module { "php-apc":}
 
 class { 'php::devel':
   require => Class['php'],
@@ -94,12 +105,9 @@ class { 'php::pear':
   require => Class['php'],
 }
 
-
-php::pecl::module { 'APC':
-  use_package => false,
-}
-php::pecl::module { 'memcache':
-  use_package => false,
+php::pear::module { 'PHPUnit':
+  repository  => 'pear.phpunit.de',
+  use_package => 'no',
 }
 
 #$xhprofPath = '/var/www/xhprof'
@@ -175,6 +183,14 @@ puphpet::ini { 'php':
     'date.timezone = "Europe/Berlin"',
   ],
   ini     => '/etc/php5/conf.d/zzz_php.ini',
+  notify  => Service['apache'],
+  require => Class['php'],
+}
+
+puphpet::ini { 'apc':
+  value => [
+    'apc.enabled = 1',
+  ],
   notify  => Service['apache'],
   require => Class['php'],
 }
