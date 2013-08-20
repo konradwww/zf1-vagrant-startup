@@ -18,7 +18,8 @@ package { [
     'build-essential',
     'vim',
     'curl',
-    'git-core'
+    'git-core',
+    'libpcre3-dev',
   ]:
   ensure  => 'installed',
 }
@@ -27,6 +28,7 @@ exec { 'zf install':
   command => 'git clone https://github.com/konradwww/zf1.git /usr/local/share/ZendFramework',
   creates => '/usr/local/share/ZendFramework',
   require => Package['git-core'],
+  timeout => -1,
 }
 
 file { '/usr/local/bin/zf':
@@ -95,7 +97,22 @@ php::module { 'php5-cli': }
 php::module { 'php5-curl': }
 php::module { 'php5-intl': }
 php::module { 'php5-mcrypt': }
-php::module { "php-apc":}
+
+
+php::pecl::module { 'apc':
+  version         => '3.1.13',
+  use_package     => false,
+  preferred_state => 'beta',
+  before          => File['/vagrant/APP_ROOT/system/apc.php'],
+  notify          => Service['apache'],  
+  require         => [ Package['libpcre3-dev'] ], 
+}
+
+file { '/vagrant/APP_ROOT/system/apc.php':
+  ensure  => 'link',
+  target  => '/usr/share/php/apc.php',
+  require => [ File['/vagrant/APP_ROOT/system'] ],
+}
 
 class { 'php::devel':
   require => Class['php'],
@@ -181,16 +198,9 @@ puphpet::ini { 'xdebug':
 puphpet::ini { 'php':
   value   => [
     'date.timezone = "Europe/Berlin"',
+    'extension=apc.so',
   ],
   ini     => '/etc/php5/conf.d/zzz_php.ini',
-  notify  => Service['apache'],
-  require => Class['php'],
-}
-
-puphpet::ini { 'apc':
-  value => [
-    'apc.enabled = 1',
-  ],
   notify  => Service['apache'],
   require => Class['php'],
 }
