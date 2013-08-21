@@ -25,22 +25,24 @@ package { [
   ensure  => 'installed',
 }
 
-exec { 'zf install':
-  command => 'git clone https://github.com/konradwww/zf1.git /usr/local/share/ZendFramework',
-  creates => '/usr/local/share/ZendFramework',
-  require => Package['git-core'],
-  timeout => -1,
+#Zend Framework clone
+$zendFrameworkPath = '/usr/local/share/ZendFramework'
+vcsrepo { $zendFrameworkPath:
+  ensure   => present,
+  provider => git,
+  source   => 'https://github.com/konradwww/zf1.git',
+  require  => Package['git-core'],
 }
 
 file { '/usr/local/bin/zf':
   ensure => 'link',
   target => '/usr/local/share/ZendFramework/bin/zf.sh',  
-  require => Exec['zf install'],
+  require => Vcsrepo[$zendFrameworkPath],
 }
 
 exec { 'zf create project':
   command => 'zf create project /vagrant/APP_ROOT',
-  creates => '/vagrant/APP_ROOT',
+  creates => '/vagrant/APP_ROOT/library',
   require => File['/usr/local/bin/zf'],
 }
 
