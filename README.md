@@ -3,7 +3,7 @@ zf1-vagrant-startup
 - Ubuntu precise64
 - PHP 5.3
 - APC 3.1.13
-- Zend Framework 1.12.x
+- Zend Framework 1.12.3
 - Apache 2.2.22
 - PEAR, PECL, Composer, PHPUnit, XHPROF, XDebug
 

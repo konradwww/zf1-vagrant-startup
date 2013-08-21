@@ -31,6 +31,7 @@ vcsrepo { $zendFrameworkPath:
   ensure   => present,
   provider => git,
   source   => 'https://github.com/konradwww/zf1.git',
+  revision => 'release-1.12.3',
   require  => Package['git-core'],
 }
 
