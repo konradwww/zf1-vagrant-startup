@@ -20,6 +20,7 @@ package { [
     'curl',
     'git-core',
     'libpcre3-dev',
+    'graphviz',
   ]:
   ensure  => 'installed',
 }
@@ -128,50 +129,50 @@ php::pear::module { 'PHPUnit':
   use_package => 'no',
 }
 
-#$xhprofPath = '/var/www/xhprof'
+$xhprofPath = '/vagrant/APP_ROOT/system/xhprof'
 
-#php::pecl::module { 'xhprof':
-#  use_package     => false,
-#  preferred_state => 'beta',
-#}
+php::pecl::module { 'xhprof':
+  use_package     => false,
+  preferred_state => 'beta',
+}
 
 if !defined(Package['git-core']) {
   package { 'git-core' : }
 }
 
-#vcsrepo { $xhprofPath:
-#  ensure   => present,
-#  provider => git,
-#  source   => 'https://github.com/facebook/xhprof.git',
-#  require  => Package['git-core']
-#}
+vcsrepo { $xhprofPath:
+  ensure   => present,
+  provider => git,
+  source   => 'https://github.com/facebook/xhprof.git',
+  require  => Package['git-core']
+}
 
-#file { "${xhprofPath}/xhprof_html":
-#  ensure  => 'directory',
-#  owner   => 'vagrant',
-#  group   => 'vagrant',
-#  mode    => '0775',
-#  require => Vcsrepo[$xhprofPath]
-#}
+file { "${xhprofPath}/xhprof_html":
+  ensure  => 'directory',
+  owner   => 'vagrant',
+  group   => 'vagrant',
+  mode    => '0775',
+  require => Vcsrepo[$xhprofPath]
+}
 
-#composer::run { 'xhprof-composer-run':
-#  path    => $xhprofPath,
-#  require => [
-#    Class['composer'],
-#    File["${xhprofPath}/xhprof_html"]
-#  ]
-#}
+composer::run { 'xhprof-composer-run':
+  path    => $xhprofPath,
+  require => [
+    Class['composer'],
+    File["${xhprofPath}/xhprof_html"]
+  ]
+}
 
-#apache::vhost { 'xhprof':
-#  server_name => 'xhprof',
-#  docroot     => "${xhprofPath}/xhprof_html",
-#  port        => 80,
-#  priority    => '1',
-#  require     => [
-#    Php::Pecl::Module['xhprof'],
-#    File["${xhprofPath}/xhprof_html"]
-#  ]
-#}
+apache::vhost { 'xhprof':
+  server_name => 'xhprof',
+  docroot     => "${xhprofPath}/xhprof_html",
+  port        => 80,
+  priority    => '1',
+  require     => [
+    Php::Pecl::Module['xhprof'],
+    File["${xhprofPath}/xhprof_html"]
+  ]
+}
 
 
 class { 'xdebug':
@@ -196,6 +197,15 @@ puphpet::ini { 'xdebug':
   require => Class['php'],
 }
 
+puphpet::ini { 'xhprof':
+  value   => [
+    'extension=xhprof.so',
+    'xhprof.output_dir = "/tmp"'
+  ],
+  ini     => '/etc/php5/conf.d/zzz_xhprof.ini',
+  notify  => Service['apache'],
+  require => Class['php'],
+}
 puphpet::ini { 'php':
   value   => [
     'date.timezone = "Europe/Berlin"',
