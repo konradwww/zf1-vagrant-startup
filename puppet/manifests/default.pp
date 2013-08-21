@@ -78,11 +78,11 @@ apache::dotconf { 'custom':
 apache::module { 'rewrite': }
 
 apache::vhost { 'default':
-  docroot       => '/vagrant/APP_ROOT/public',
-  server_name   => false,
-  priority      => '',
-  template      => 'apache/virtualhost/vhost.conf.erb',
-  env_variables => [
+  docroot           => '/vagrant/APP_ROOT/public',
+  server_name       => 'localhost',
+  priority          => '',
+  template          => 'apache/virtualhost/vhost.conf.erb',
+  env_variables     => [
     'APP_ENVIRONMENT development',
   ],
 }
@@ -97,6 +97,7 @@ php::module { 'php5-cli': }
 php::module { 'php5-curl': }
 php::module { 'php5-intl': }
 php::module { 'php5-mcrypt': }
+php::module { 'php5-gd': }
 
 
 php::pecl::module { 'apc':
