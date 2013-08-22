@@ -21,6 +21,7 @@ package { [
     'git-core',
     'libpcre3-dev',
     'graphviz',
+    'phppgadmin',
   ]:
   ensure  => 'installed',
 }
@@ -98,6 +99,7 @@ class { 'php':
 }
 
 php::module { 'php5-mysql': }
+php::module { 'php5-pgsql': }
 php::module { 'php5-cli': }
 php::module { 'php5-curl': }
 php::module { 'php5-intl': }
@@ -255,4 +257,28 @@ file { '/vagrant/APP_ROOT/system/phpmyadmin':
   ensure  => 'link',
   target  => '/usr/share/phpmyadmin',
   require => Class['phpmyadmin'],
+}
+
+
+#postgreSQL
+class { 'postgresql':
+  charset => 'UTF8',
+  locale  => 'en_US.UTF-8',
+}->
+class { 'postgresql::server':
+  config_hash => {
+    postgres_password => 'changeThisPassword',
+  },
+}
+
+postgresql::db { 'db_development':
+  user     => 'user1',
+  password => 'changeThisPassword',
+  grant    => 'ALL',
+}
+
+file { '/vagrant/APP_ROOT/system/phppgadmin':
+  ensure  => 'link',
+  target  => '/usr/share/phppgadmin',
+  require => Package['phppgadmin'],
 }

@@ -7,9 +7,13 @@ zf1-vagrant-startup
 - Apache 2.2.22
 - PEAR, PECL, Composer, PHPUnit, XHPROF, XDebug
 - MySQL client version: 5.5.32, phpMyAdmin
+- postgreSQL version: 9.1.9, phpPgAdmin
 
-WEBROOT:    /vagrant/APP_ROOT/public
+localhost:8080/system
 
-LOGS:       /vagrant/logs
+DB User: user1
+Password: changeThisPassword
 
-SYSTEM INFO:/vagrant/system
+
+
+
