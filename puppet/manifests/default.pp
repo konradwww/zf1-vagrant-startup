@@ -97,6 +97,7 @@ class { 'php':
   module_prefix       => '',
 }
 
+php::module { 'php5-mysql': }
 php::module { 'php5-cli': }
 php::module { 'php5-curl': }
 php::module { 'php5-intl': }
@@ -230,5 +231,28 @@ puphpet::ini { 'custom':
   require => Class['php'],
 }
 
+#mySQL
+class { 'mysql::server':
+  config_hash   => { 'root_password' => 'changeThisPassword' }
+}
 
+mysql::db { 'db_development':
+  grant    => [
+    'ALL'
+  ],
+  user     => 'user1',
+  password => 'changeThisPassword',
+  host     => 'localhost',
+  charset  => 'utf8',
+  require  => Class['mysql::server'],
+}
 
+class { 'phpmyadmin':
+  require => [Class['mysql::server'], Class['mysql::config'], Class['php']],
+}
+
+file { '/vagrant/APP_ROOT/system/phpmyadmin':
+  ensure  => 'link',
+  target  => '/usr/share/phpmyadmin',
+  require => Class['phpmyadmin'],
+}
