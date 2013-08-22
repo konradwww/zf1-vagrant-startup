@@ -11,8 +11,9 @@ zf1-vagrant-startup
 
 localhost:8080/system
 
-DB User: user1
-Password: changeThisPassword
+**DB User:** user1
+
+**Password:** changeThisPassword
 
 
 
