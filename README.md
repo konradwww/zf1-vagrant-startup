@@ -9,9 +9,15 @@ zf1-vagrant-startup
 - MySQL client version: 5.5.32, phpMyAdmin
 - postgreSQL version: 9.1.9, phpPgAdmin
 
-localhost:8080/system
+**Applications**
 
-**DB User:** user1
+- localhost:8080
+- localhost:8080/system/phpinfo.php
+- localhost:8080/system/apc.php
+- localhost:8080/system/phpmyadmin
+- localhost:8080/system/phppgadmin
+
+**Admin/DB User:** user1
 
 **Password:** changeThisPassword
 
